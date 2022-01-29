@@ -7,8 +7,10 @@
 
 
 % number of agents 
+% Liczba MEC?
 int: m;
 
+%Liczba żądań obsługi?
 % number of jobs 
 int: n;
 
@@ -18,26 +20,30 @@ set of int: I = 1..m;
 % set of jobs 
 set of int: J = 1..n;
 
+%Tablica zuzycia zasobu od danej pracy?
 % resource consumed in allocating job j to agent i 
 array[I,J] of int: a; 
 
+%Tablica pojemności?
 % resource capacity of agent i 
 array[I] of int: b;
 
+%Koszt alokacji zadania?
 % cost of allocating job j to agent i 
 array[I,J] of int: c;
 
+%Tablica przypisanych zadan?
 % x[i,j] = 1 means job j is assigned to agent i 
 array[I,J] of var 0..1: x;
 
-
+%Jak najtaniej przypisać zadania
 % the objective is to find cheapest assignment (note that gap can also
 % be formulated as maximization problem) 
 var int: obj = sum(i in I, j in J) (c[i,j] * x[i,j]);
 solve :: int_search( 
         [x[i,j] | i in I, j in J] ++ [obj] , 
         first_fail, indomain_min, complete)
-    minimize obj;
+    maximize obj;
     % maximize obj;
 
 constraint
