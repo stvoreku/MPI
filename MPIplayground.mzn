@@ -1,22 +1,10 @@
-% 
-% Generalized Assignment Problem in MiniZinc.
-% 
-% From GLPK:s example gap.mod
-% """
-% GAP, Generalized Assignment Problem
-%
-% Written in GNU MathProg by Andrew Makhorin <mao@mai2.rcnet.ru>
-% 
-% The Generalized Assignment Problem (GAP) is to assign a set of jobs
-% to a set of agents subject to the constraints that each job must be
-% assigned exactly to one agent and the total resources consumed by all
-% jobs assigned to an agent must not exceed the agent's capacity.
-% """
+% Zaprojektuj algorytm orkiestracji usług dla systemu obliczeń na brzegu sieci,
+% który pozwoli zagwarantować założony poziom dostępności usług oraz zapewni efektywne wykorzystanie zasobów.
+% Zaproponuj metodę dokładną oraz heurystyczną.
+% Porównaj efektywności tych metod dla przykładowego systemu obliczeń na brzegu sieci.
 
-% 
-% This MiniZinc model was created by Hakan Kjellerstrand, hakank@bonetmail.com
-% See also my MiniZinc page: http://www.hakank.org/minizinc
-%
+
+
 
 % number of agents 
 int: m;
