@@ -6,6 +6,11 @@ n = 15 #Liczba zadań do przypisania
 
 #W minizinc I,J to sety 1..m, 1..n, w pythonie to z grubsza range(1, m), range(1,n)
 
+def erlangB(A, N): #docelowo erlang?
+    p = 0
+    fact = np.math.factorial(N)
+    series = [pow(A,i)/np.math.factorial(i) for i in range(0, N+1)]
+    return (fact/sum(series))
 
 b = [36,34,38,27,33] #Pojemności dla każdego mec
 
@@ -24,18 +29,32 @@ c = np.asarray([
     18,19,15,15,21,25,16,16,23,15,22,17,19,22,24]).reshape(m,n)
 
 
-X = []
 
+
+used_trial = [-1]
+print('Looking for solutions...')
 while True:
-    used_trial = [-1]
     while any(i <= 0 for i in used_trial):
         X = np.zeros(shape=(m,n), dtype=int)
         for x in X.T:
             r = random.randint(0,4)
             x[r] = 1
         used_trial = b - (a*X).sum(axis=1)
-    print((c*X).sum())
+    used_trial = [-1]
+    print(X)
+    print((c*X).sum(axis=0)) #koszt per zadanie <- można tu zrobić genetycznie
+    obj = (c * X).sum()  # KOSZT
+    print(obj)
 
+
+
+
+#Testowe X
+# X = [[0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0],
+#     [1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,],
+#     [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+#     [0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0],
+#     [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0]]
 
 obj = (c*X).sum() #KOSZT
 used = (a*X).sum(axis=1)
