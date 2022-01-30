@@ -43,7 +43,7 @@ var int: obj = sum(i in I, j in J) (c[i,j] * x[i,j]);
 solve :: int_search( 
         [x[i,j] | i in I, j in J] ++ [obj] , 
         first_fail, indomain_min, complete)
-    minimize obj;
+    maximize obj;
     % maximize obj;
 
 constraint
@@ -56,7 +56,7 @@ constraint
   /\
   % total amount of resources consumed by all jobs assigned to agent i
   %  must not exceed the agent's capacity 
-  forall(i in I) ( sum(j in J) (a[i,j] * x[i,j]) <= (b[i])*0.9)
+  forall(i in I) ( sum(j in J) (a[i,j] * x[i,j]) <= (b[i]))
 
 ;
 
