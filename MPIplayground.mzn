@@ -43,7 +43,7 @@ var int: obj = sum(i in I, j in J) (c[i,j] * x[i,j]);
 solve :: int_search( 
         [x[i,j] | i in I, j in J] ++ [obj] , 
         first_fail, indomain_min, complete)
-    maximize obj;
+    minimize obj;
     % maximize obj;
 
 constraint
