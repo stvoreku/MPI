@@ -48,7 +48,7 @@ constraint
   forall(j in J) (sum(i in I) (x[i,j]) = 1)
 
   /\
-  % Ilość zasobów przypisanych do serwera i nie może przekroczyć jego pojemności
+  % Ilość zasobów przypisanych do każdego serwera i nie może przekroczyć jego pojemności
   forall(i in I) ( sum(j in J) (a * x[i,j]) <= (b[i]))
 
 ;
@@ -61,38 +61,33 @@ output [
   if j = 1 then "\n" else " " endif ++
     show(x[i,j]) 
   | i in I, j in J
-] ++ ["\n"];
+] ++ ["\n"]
+++ ["some variable: ", show(m)];
 
 
 % Erlang
+% Generujemy wartości z góry, bo
+
+% Maksymalna liczba kontenerów jaka może być w systemie
+% int: max_cont_num = sum(i in I) (ceil(b[i] / a));
+% zamiast ^tego można w zasadzie użyć n
+
+
+array[int] of var float: block_prob_baked = [block_prob(0.12, i) | i in 1..n];
 
 function var float: block_prob(var float: A, var int: l) = 
   if l = 0 then 1 else a*block_prob(a, l-1) / (a*block_prob(a, l-1) + l) endif;
+
+
 
 %
 % data
 % 
 
-% """
-% These data correspond to the instance c515-1 (gap1) from:
-%
-%   I.H. Osman, "Heuristics for the Generalised Assignment Problem:
-%   Simulated Annealing and Tabu Search Approaches", OR Spektrum, Volume
-%   17, 211-225, 1995
-%
-%   D. Cattrysse, M. Salomon and L.N. Van Wassenhove, "A set partitioning
-%   heuristic for the generalized assignment problem", European Journal
-%   of Operational Research, Volume 72, 167-174, 1994 
-%
-% The optimal solution is 261 (minimization) or 336 (maximization) 
-% """
-
 m = 5;
-
 n = 15;
 
 b = [36,34,38,27,33];
-
 %b = [35,35,35,35,35];
 
 z = [1,2,1,3,2];
