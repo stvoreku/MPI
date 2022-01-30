@@ -43,7 +43,7 @@ var int: obj = sum(i in I, j in J) (c[i,j] * x[i,j]);
 solve :: int_search( 
         [x[i,j] | i in I, j in J] ++ [obj] , 
         first_fail, indomain_min, complete)
-    maximize obj;
+    minimize obj;
     % maximize obj;
 
 constraint
@@ -99,7 +99,9 @@ a = array2d(I,J, [
 20,11, 8,14, 9, 5, 6,19,19, 7, 6, 6,13, 9,18,
  8,13,13,13,10,20,25,16,16,17,10,10, 5,12,23]);
 
-b = [36,34,38,27,33];
+%b = [36,34,38,27,33];
+
+b = [35,35,35,35,35];
 
 c = array2d(I, J,[
 17,21,22,18,24,15,20,18,19,18,16,22,24,24,16,
