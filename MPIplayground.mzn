@@ -56,7 +56,7 @@ constraint
   /\
   % total amount of resources consumed by all jobs assigned to agent i
   %  must not exceed the agent's capacity 
-  forall(i in I) ( sum(j in J) (a[i,j] * x[i,j]) <= b[i])
+  forall(i in I) ( sum(j in J) (a[i,j] * x[i,j]) <= (b[i])*0.9)
 
 ;
 
