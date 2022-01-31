@@ -1,55 +1,44 @@
 % Zaprojektuj algorytm orkiestracji usług dla systemu obliczeń na brzegu sieci,
 % który pozwoli zagwarantować założony poziom dostępności usług oraz zapewni efektywne wykorzystanie zasobów.
-% Zaproponuj metodę dokładną oraz heurystyczną.
-% Porównaj efektywności tych metod dla przykładowego systemu obliczeń na brzegu sieci.
 
+% Wygenerowana wcześniej tablica dla wybranego m oraz b
 include "erlangtable.dzn";
-
 int: E_INDEX;
-
 set of int: E_ = 1..E_INDEX-1;
-
 array[E_] of float: ERLANG_TABLE;
 
+% Dostępność wyrażona w procencie odrzuconych zapytań
+float: max_block_rate;
 
-% number of agents 
-% Liczba MEC?
+% Liczba serwerów MEC
 int: m;
 
-%Liczba żądań obsługi?
-% number of jobs 
+%Liczba zadań / aplikacji
 int: n;
 
-% set of agents 
+% Indeksy serwerów
 set of int: I = 1..m;
 
-% set of jobs 
+% Indeksy zadań
 set of int: J = 1..n;
 
-%Tablica zuzycia zasobu od danej pracy?
-% resource consumed in allocating job j to agent i 
+% Tablica zużycia zasobów zadania j na serwerze i (uwzględnia lokalizację)
 array[I,J] of int: a; 
 
-%Tablica pojemności?
-% resource capacity of agent i 
-array[I] of int: b;
+% Pojemność serwera MEC (wszystkie są takie same)
+int: b;
 
-%Koszt alokacji zadania?
-% cost of allocating job j to agent i 
+% Tablica kosztów uruchomienia zadania j na serwerze i (uwzględnia lokalizację?)
 array[I,J] of int: c;
 
-%Tablica przypisanych zadan?
-% x[i,j] = 1 means job j is assigned to agent i 
+% Poszukiwany rozkład kontenrów: 
+% x[i,j] = 1 oznacza że kontener j jest przypisany do serwera i
 array[I,J] of var 0..1: x;
 
-%Jak najtaniej przypisać zadania
-% the objective is to find cheapest assignment (note that gap can also
-% be formulated as maximization problem) 
+% Jak najtaniej przypisać zadania
 var int: obj = sum(i in I, j in J) (c[i,j] * x[i,j]);
 
-var int: A_total = sum(i in I) ( sum(j in J) (a[i,j] * x[i,j]));
-
-var float: invB = 1.0;
+var int: A_total = sum(i in I) ( sum(j in J) (a[i,j] * x[i,j])); % dzielenie przez b zostało uwzględnione w tablicy
 
 
 var float: erlang = ERLANG_TABLE[A_total];
@@ -64,16 +53,15 @@ constraint
   obj >= 0
   /\
 
-  % job j must be assigned exactly to one agent 
+  % Każdy kontener musi być przypisany do dokładnie jednego serwera
   forall(j in J) (sum(i in I) (x[i,j]) = 1)
 
   /\
-  % total amount of resources consumed by all jobs assigned to agent i
-  %  must not exceed the agent's capacity 
-  forall(i in I) ( sum(j in J) (a[i,j] * x[i,j]) <= (b[i]))
+  % Ilość zasobów przypisanych do każdego serwera i nie może przekroczyć jego możliwości
+  forall(i in I) ( sum(j in J) (a[i,j] * x[i,j]) <= b)
   
   /\
-  erlang <= 0.1
+  erlang <= max_block_rate
 
 ;
 
@@ -89,26 +77,10 @@ output   ["\nerl: ", show(erlang),
   | i in I, j in J
 ] ++ ["\n"];
 
-%
-% data
-% 
+% Dane
 
-% """
-% These data correspond to the instance c515-1 (gap1) from:
-%
-%   I.H. Osman, "Heuristics for the Generalised Assignment Problem:
-%   Simulated Annealing and Tabu Search Approaches", OR Spektrum, Volume
-%   17, 211-225, 1995
-%
-%   D. Cattrysse, M. Salomon and L.N. Van Wassenhove, "A set partitioning
-%   heuristic for the generalized assignment problem", European Journal
-%   of Operational Research, Volume 72, 167-174, 1994 
-%
-% The optimal solution is 261 (minimization) or 336 (maximization) 
-% """
-
+max_block_rate = 0.1;
 m = 5;
-
 n = 15;
 
 a = array2d(I,J, [
@@ -118,9 +90,7 @@ a = array2d(I,J, [
 20,11, 8,14, 9, 5, 6,19,19, 7, 6, 6,13, 9,18,
  8,13,13,13,10,20,25,16,16,17,10,10, 5,12,23]);
 
-%b = [36,34,38,27,33];
-
-b = [120,120,120,120,120];
+b = 120;
 
 c = array2d(I, J,[
 17,21,22,18,24,15,20,18,19,18,16,22,24,24,16,
