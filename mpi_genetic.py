@@ -48,7 +48,8 @@ population = []
 while len(population) < 2:
     ch = Chromosome(m,n,c)
     ch.random_feasible(a,b)
-    population.append(ch)
+    if ch.erlang_feasible(a, len(b), b[0], 0.01):
+        population.append(ch)
 
 print('Got two parents')
 
@@ -65,12 +66,13 @@ for i in range(0,1000):
     population = population[0:10] #ograniczamy populacje do najlepszych
     #try_B = sum(b)
     try_usage = sum(population[0].usages(a))
-    print(try_usage)
-    print(len(b))
     er = ErlangB((try_usage/b[0]), len(b))
     erlang_array.append(er)
     cost_array.append(population[0].cost)
     flow_array.append(try_usage/b[0])
+
+print(population[0].X)
+print(er)
 
 fig, ax = plt.subplots()
 plt.figure("1")

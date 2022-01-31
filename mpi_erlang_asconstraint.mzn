@@ -3,7 +3,13 @@
 % Zaproponuj metodę dokładną oraz heurystyczną.
 % Porównaj efektywności tych metod dla przykładowego systemu obliczeń na brzegu sieci.
 
+include "erlangtable.dzn";
 
+int: E_INDEX;
+
+set of int: E_ = 1..E_INDEX-1;
+
+array[E_] of float: ERLANG_TABLE;
 
 
 % number of agents 
@@ -40,6 +46,14 @@ array[I,J] of var 0..1: x;
 % the objective is to find cheapest assignment (note that gap can also
 % be formulated as maximization problem) 
 var int: obj = sum(i in I, j in J) (c[i,j] * x[i,j]);
+
+var int: A_total = sum(i in I) ( sum(j in J) (a[i,j] * x[i,j]));
+
+var float: invB = 1.0;
+
+
+var float: erlang = ERLANG_TABLE[A_total];
+
 solve :: int_search( 
         [x[i,j] | i in I, j in J] ++ [obj] , 
         first_fail, indomain_min, complete)
@@ -57,10 +71,15 @@ constraint
   % total amount of resources consumed by all jobs assigned to agent i
   %  must not exceed the agent's capacity 
   forall(i in I) ( sum(j in J) (a[i,j] * x[i,j]) <= (b[i]))
+  
+  /\
+  erlang <= 0.1
 
 ;
 
-output [
+output   ["\nerl: ", show(erlang), 
+ 
+] ++ [
   "\nobj: ", show(obj), 
  
 ] ++
@@ -101,7 +120,7 @@ a = array2d(I,J, [
 
 %b = [36,34,38,27,33];
 
-b = [50,50,50,50,50];
+b = [120,120,120,120,120];
 
 c = array2d(I, J,[
 17,21,22,18,24,15,20,18,19,18,16,22,24,24,16,
