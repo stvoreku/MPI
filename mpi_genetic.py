@@ -7,7 +7,7 @@ m = 5 #Liczba serwerów MEC
 n = 15 #Liczba zadań do przypisania
 
 #b = [36,34,38,27,33] #Pojemności dla każdego mec
-b = [80,80,80,80,80]
+b = [120,120,120,120,120]
 
 def ErlangB (E, m):
     InvB = 1.0
@@ -36,7 +36,7 @@ def cross(parents, num_offspring):
         new_ch = Chromosome(m,n,c)
         new_ch.mix_genes(parents)
         new_ch.mutate()
-        if new_ch.feasible(a,b):
+        if new_ch.feasible(a,b) and new_ch.erlang_feasible(a, len(b), b[0], 0.01):
             offsprings_list.append(new_ch)
     return offsprings_list
 
@@ -54,6 +54,7 @@ print('Got two parents')
 
 cost_array = []
 erlang_array = []
+flow_array =[]
 
 for i in range(0,1000):
     print(f"Generation {i}")
@@ -62,13 +63,14 @@ for i in range(0,1000):
     population += offs
     population.sort(key=lambda x: x.cost, reverse=False)
     population = population[0:10] #ograniczamy populacje do najlepszych
-    try_B = sum(b)
+    #try_B = sum(b)
     try_usage = sum(population[0].usages(a))
     print(try_usage)
     print(len(b))
-    er = ErlangB((try_usage/80), len(b))
+    er = ErlangB((try_usage/b[0]), len(b))
     erlang_array.append(er)
     cost_array.append(population[0].cost)
+    flow_array.append(try_usage/b[0])
 
 fig, ax = plt.subplots()
 plt.figure("1")
@@ -78,5 +80,8 @@ fig, ax = plt.subplots()
 plt.figure("2")
 ax.plot(cost_array, label='cost')
 fig.show()
-
+fig, ax = plt.subplots()
+plt.figure("3")
+ax.plot(flow_array, label='flows')
+fig.show()
 

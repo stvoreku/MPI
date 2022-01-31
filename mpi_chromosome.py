@@ -1,5 +1,6 @@
 import numpy as np
 import random
+import erlang
 
 class Chromosome():
 
@@ -19,6 +20,11 @@ class Chromosome():
     def feasible(self, A, B):
         usage = B - (A * self.X).sum(axis=1)
         return all(i >= 0 for i in usage)
+
+    def erlang_feasible(self, A, N, node_capacity, max_erlang):
+        A_curr = self.usages(A) / node_capacity
+        return max_erlang >= erlang.ErlangB(sum(A_curr), N)
+
 
     def from_X(self, X):
         self.X = X

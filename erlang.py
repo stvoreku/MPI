@@ -7,5 +7,4 @@ def ErlangB (E, m):
         InvB = 1.0 + InvB * (j/E)
     return (1.0 / InvB)
 
-print(ErlangB(0.1111, 1))
 
