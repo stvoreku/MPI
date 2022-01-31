@@ -6,13 +6,13 @@
 int: m;
 
 % Liczba kontenerów (wszystkie są takie same)
-int: n;
+var int: n;
 
 % Zbiór serwerów
 set of int: I = 1..m;
 
 % Zbiór kontenerów
-set of int: J = 1..n;
+set of int: J = 1..max_cont_num;
 
 % Zasoby zajmowane przez jeden kontener
 int: a = 9;
@@ -25,6 +25,12 @@ array[I] of int: c;
 
 % Tablica zapotrzebowań przy serwerach
 array[I] of float: z;
+
+% Całkowite zapotrzebowanie
+float: A = sum(z);
+
+% Dopuszczalny poziom niedostępności
+float: prob;
 
 % Poszukiwany rozkład kontenrów: 
 % x[i,j] = 1 oznacza że kontener j jest przypisany do serwera i  //tu można zmienić na więcej niż jeden może?
@@ -49,47 +55,39 @@ constraint
   /\
   % Ilość zasobów przypisanych do każdego serwera i nie może przekroczyć jego pojemności
   forall(i in I) ( sum(j in J) (a * x[i,j]) <= (b[i]))
-  
+
 ;
+
+constraint block_prob(A, n) <= 1-prob;
 
 output [
   "\nobj: ", show(obj), 
- 
+
 ] ++
 [
   if j = 1 then "\n" else " " endif ++
     show(x[i,j]) 
   | i in I, j in J
-] ++ ["\n"]
-++ ["some variable: ", show(m)];
+] ++ ["\n"] ++ ["some variable: ", show(m)];
 
 
 % Erlang
 
 % Maksymalna liczba kontenerów jaka może być w systemie
-% int: max_cont_num = sum(i in I) (ceil(b[i] / a));
-% zamiast ^tego można w zasadzie użyć n
-int: max_cont_num = n;
+int: max_cont_num = sum(i in I) (ceil(b[i] / a));
+
 
 function var float: block_prob(var float: A, var int: l) = 
   if l = 0 then 1 else a*block_prob(a, l-1) / (a*block_prob(a, l-1) + l) endif;
 
-% Tworzymy zmienne lokalne; Następnie ograniczamy y naszym warunkiem
-% TODO trzeba jeszcze jakoś zapewnić maksymalizację zmiennej y
-function var int: inverse_erlang(var float: A, var float: prob) = 
-  let  {
-    var 0..max_cont_num: y;  % potencjalne rozwiązania
-    array[int] of var float: block_prob_baked = [block_prob(A, i) | i in 1..n]; % możliwe wartości funkcji
-    constraint block_prob(A, y) <= 1-prob
-   } in y;
 
 
-%
-% data
-% 
+% Dane
+
+prob = 0.05;
 
 m = 5;
-n = 15;
+% n = 15;
 
 b = [36,34,38,27,33];
 %b = [35,35,35,35,35];
