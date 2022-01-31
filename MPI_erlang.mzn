@@ -66,7 +66,6 @@ output [
 
 
 % Erlang
-% Generujemy wartości z góry, bo
 
 % Maksymalna liczba kontenerów jaka może być w systemie
 % int: max_cont_num = sum(i in I) (ceil(b[i] / a));
@@ -76,13 +75,13 @@ int: max_cont_num = n;
 function var float: block_prob(var float: A, var int: l) = 
   if l = 0 then 1 else a*block_prob(a, l-1) / (a*block_prob(a, l-1) + l) endif;
 
-% Tworzymy dwie zmienne lokalne; y, czyli rozwiązanie
-% oraz wyliczamy tablicę rozwiązań. Następnie ograniczamy y naszym warunkiem
+% Tworzymy zmienne lokalne; Następnie ograniczamy y naszym warunkiem
 % TODO trzeba jeszcze jakoś zapewnić maksymalizację zmiennej y
 function var int: inverse_erlang(var float: A, var float: prob) = 
-  let  { var 0..max_cont_num: y;
-   array[int] of var float: block_prob_baked = [block_prob(A, i) | i in 1..n];
-   constraint block_prob(A, y) <= 1-prob
+  let  {
+    var 0..max_cont_num: y;  % potencjalne rozwiązania
+    array[int] of var float: block_prob_baked = [block_prob(A, i) | i in 1..n]; % możliwe wartości funkcji
+    constraint block_prob(A, y) <= 1-prob
    } in y;
 
 
