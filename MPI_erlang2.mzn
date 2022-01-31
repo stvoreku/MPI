@@ -25,13 +25,11 @@ int: b;
 % Tablica kosztów uruchomienia zadania j na serwerze i (uwzględnia lokalizację?)
 array[I,J] of int: c;
 
-% Poszukiwany rozkład kontenrów: 
+% Poszukiwany rozkład kontenerów: 
 % x[i,j] = 1 oznacza że kontener j jest przypisany do serwera i
 array[I,J] of var 0..1: x;
 
-%Jak najtaniej przypisać zadania
-% the objective is to find cheapest assignment (note that gap can also
-% be formulated as maximization problem) 
+% Jak najtaniej przypisać zadania
 var int: obj = sum(i in I, j in J) (c[i,j] * x[i,j]);
 solve :: int_search( 
         [x[i,j] | i in I, j in J] ++ [obj] , 
@@ -56,7 +54,7 @@ constraint
 
 var float: A = sum(i in I) ( sum(j in J) (a[i,j] * x[i,j] / b) );
 
-constraint get_block_prob(A, n) <= 1-availability;
+constraint get_block_prob(A, m) <= 1-availability;
 
 output [
   "\nobj: ", show(obj), 
@@ -68,13 +66,27 @@ output [
   | i in I, j in J
 ] ++ ["\n"] ++
 [
-"A: ", show(A)
+"A: ", show(A), "Pb: ", show(get_block_prob(A, m))
 ];
 
 
-function var float: get_block_prob(var float: a, var int: l) = 
+function var 0.0..1.0: get_block_prob(var float: a, var int: l) = 
   if l = 0 then 1 else a*get_block_prob(a, l-1) / (a*get_block_prob(a, l-1) + l) endif;
 
+
+function var 0.0..1.0: get_inv_block_prob(var float: a, var int: l) = 
+  if l = 0 then 1 else 1 + (l/a)*(1/get_inv_block_prob(a, l-1)) endif;
+
+
+% Przybliżenie silni Sterlinga
+function var int: factorial_approx(var int: n) =
+  let{
+  float: pi = 3.141592;
+  } in mysqrt(2*pi*n)*(1);
+
+function var int: mysqrt(var int:x) =
+         let { var 0..infinity: y;
+               constraint x = y * y; } in y;
 
 % Dane
 
