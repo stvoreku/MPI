@@ -7,7 +7,7 @@ m = 5 #Liczba serwerów MEC
 n = 15 #Liczba zadań do przypisania
 
 #b = [36,34,38,27,33] #Pojemności dla każdego mec
-b = [40,40,40,40,40]
+b = [80,80,80,80,80]
 
 def ErlangB (E, m):
     InvB = 1.0
@@ -55,7 +55,7 @@ print('Got two parents')
 cost_array = []
 erlang_array = []
 
-for i in range(0,10000):
+for i in range(0,1000):
     print(f"Generation {i}")
     print(population)
     offs = cross(population, 3)
@@ -66,7 +66,7 @@ for i in range(0,10000):
     try_usage = sum(population[0].usages(a))
     print(try_usage)
     print(len(b))
-    er = ErlangB((try_usage/35), len(b))
+    er = ErlangB((try_usage/80), len(b))
     erlang_array.append(er)
     cost_array.append(population[0].cost)
 

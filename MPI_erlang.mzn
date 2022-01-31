@@ -38,7 +38,6 @@ solve :: int_search(
         [x[i,j] | i in I, j in J] ++ [obj] , 
         first_fail, indomain_min, complete)
     minimize obj;
-    % maximize obj;
 
 constraint
   obj >= 0
@@ -50,7 +49,7 @@ constraint
   /\
   % Ilość zasobów przypisanych do każdego serwera i nie może przekroczyć jego pojemności
   forall(i in I) ( sum(j in J) (a * x[i,j]) <= (b[i]))
-
+  
 ;
 
 output [
