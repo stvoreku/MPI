@@ -44,8 +44,8 @@ class Chromosome():
             if mut_p == 1:
                 inte = random.randint(0,4)
                 self.X.T[i] = np.roll(self.X.T[i], inte)
-    def usages(self, A, B):
-        return B - (A * self.X).sum(axis=1)
+    def usages(self, A):
+        return (A * self.X).sum(axis=1)
 
     def __repr__(self):
         return f'{self.cost}'

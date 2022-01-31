@@ -1,12 +1,19 @@
 import numpy as np
 import random
 from mpi_chromosome import Chromosome
+import matplotlib.pyplot as plt
 
 m = 5 #Liczba serwerów MEC
 n = 15 #Liczba zadań do przypisania
 
-b = [36,34,38,27,33] #Pojemności dla każdego mec
-#b = [35,35,35,35,35]
+#b = [36,34,38,27,33] #Pojemności dla każdego mec
+b = [40,40,40,40,40]
+
+def ErlangB (E, m):
+    InvB = 1.0
+    for j in range(1, m+1):
+        InvB = 1.0 + InvB * (j/E)
+    return (1.0 / InvB)
 
 a = np.asarray([
     8,15,14,23, 8,16, 8,25, 9,17,25,15,10, 8,24,
@@ -45,6 +52,9 @@ while len(population) < 2:
 
 print('Got two parents')
 
+cost_array = []
+erlang_array = []
+
 for i in range(0,10000):
     print(f"Generation {i}")
     print(population)
@@ -52,9 +62,21 @@ for i in range(0,10000):
     population += offs
     population.sort(key=lambda x: x.cost, reverse=False)
     population = population[0:10] #ograniczamy populacje do najlepszych
-    if population[0].cost == 261:
-        break
+    try_B = sum(b)
+    try_usage = sum(population[0].usages(a))
+    print(try_usage)
+    print(len(b))
+    er = ErlangB((try_usage/35), len(b))
+    erlang_array.append(er)
+    cost_array.append(population[0].cost)
 
-
+fig, ax = plt.subplots()
+plt.figure("1")
+ax.plot(erlang_array, label='erlang')
+fig.show()
+fig, ax = plt.subplots()
+plt.figure("2")
+ax.plot(cost_array, label='cost')
+fig.show()
 
 
